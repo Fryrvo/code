@@ -110,22 +110,20 @@
 									@input="updateSearchProjects"
 								/>
 								<div class="sort-by">
-									<DropdownSelect
-										v-slot="{ selected }"
-										v-model="sortType"
-										class="!h-9 !w-max flex-grow"
-										name="Sort by"
-										:options="sortOptions"
-										:display-name="(value) => value?.charAt(0).toUpperCase() + value?.slice(1)"
-										@change="updateSearchProjects()"
+									<Combobox
+										:model-value="sortType"
+										:options="sortOptionsNew"
+										trigger-type="base"
+										force-direction="down"
+										class="!w-[16rem] min-w-max max-w-full"
+										@update:model-value="onSortChange"
 									>
-										<div>
-											<span class="font-semibold text-primary"
-												>{{ formatMessage(commonMessages.sortByLabel) }}:
-											</span>
-											<span class="font-semibold text-secondary">{{ selected }}</span>
-										</div>
-									</DropdownSelect>
+										<template #prefix>
+											<span class="font-semibold text-primary">{{
+												formatMessage(commonMessages.sortByLabel)
+											}}</span>
+										</template>
+									</Combobox>
 								</div>
 							</div>
 							<div class="results display-mode--list">
@@ -452,9 +450,9 @@ import {
 import {
 	Avatar,
 	ButtonLink,
+	Combobox,
 	commonMessages,
 	defineMessages,
-	DropdownSelect,
 	injectModrinthClient,
 	Input,
 	IntlFormatted,
@@ -462,7 +460,7 @@ import {
 	useRelativeTime,
 	useVIntl,
 } from '@modrinth/ui'
-import { ref } from 'vue'
+import { computed, ref } from 'vue'
 
 import ATLauncherLogo from '~/assets/images/external/atlauncher.svg?component'
 import PrismLauncherLogo from '~/assets/images/external/prism.svg?component'
@@ -477,6 +475,18 @@ const { labrinth } = injectModrinthClient()
 const searchQuery = ref('leave')
 const sortType = ref('relevance')
 const sortOptions = ['relevance', 'downloads', 'follows', 'updated', 'newest']
+
+const sortOptionsNew = computed(() =>
+	sortOptions.map((value) => ({
+		value,
+		label: value.charAt(0).toUpperCase() + value.slice(1),
+	})),
+)
+
+function onSortChange(value) {
+	sortType.value = value
+	updateSearchProjects()
+}
 
 const PROJECT_COUNT = 100000
 
