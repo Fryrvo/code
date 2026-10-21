@@ -40,8 +40,10 @@
 			>
 				<template v-if="showChevron" #trailing>
 					<ChevronLeftIcon
-						class="pointer-events-none size-5 text-secondary transition-transform duration-150"
+						class="size-5 cursor-pointer text-secondary transition-transform duration-150"
 						:class="isOpen ? (openDirection === 'down' ? 'rotate-90' : '-rotate-90') : '-rotate-90'"
+						@mousedown.prevent
+						@click="(searchTriggerRef?.focus(), handleSearchClick())"
 					/>
 				</template>
 			</Input>
