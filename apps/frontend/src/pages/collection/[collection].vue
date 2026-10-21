@@ -15,73 +15,40 @@
 		<NewModal v-if="canEdit" ref="editModal" :header="formatMessage(messages.editingCollection)">
 			<div class="flex w-[30rem] flex-col gap-3">
 				<div class="flow-root">
-					<div class="group relative float-end ml-4">
-						<TeleportOverflowMenu
-							:label="formatMessage(messages.editIconButton)"
-							:tooltip="formatMessage(messages.editIconButton)"
-							class="m-0 cursor-pointer appearance-none border-none bg-transparent p-0 transition-transform group-active:scale-95"
-							:options="[
-								{
-									id: 'select',
-									label:
-										previewImage || collection.icon_url
-											? formatMessage(messages.replaceIcon)
-											: formatMessage(messages.selectIcon),
-									action: () => {
-										const input = iconInputRef?.$el?.querySelector('input')
-										input?.click()
-									},
-								},
-								{
-									id: 'remove',
-									label: formatMessage(messages.removeIconButton),
-									action: () => {
-										deletedIcon = true
-										previewImage = null
-									},
-									shown: !deletedIcon && (previewImage || collection.icon_url),
-								},
-							]"
-						>
+					<div class="flex flex-col gap-2.5">
+						<h2 class="m-0 text-lg font-semibold text-contrast">
+							{{ formatMessage(messages.editIconButton) }}
+						</h2>
+						<div class="flex items-center gap-4">
 							<Avatar
 								:src="deletedIcon ? null : previewImage ? previewImage : collection.icon_url"
-								size="108px"
-								class="!border-4 group-hover:brightness-75"
+								size="md"
 								no-shadow
 							/>
-							<div class="absolute right-0 top-0 m-2">
-								<div
-									class="m-0 flex aspect-square items-center justify-center rounded-full border-[1px] border-solid border-button-border bg-button-bg p-2 text-primary"
+							<div class="flex flex-col gap-2">
+								<FileButton
+									:max-size="524288"
+									:prompt="formatMessage(messages.uploadIconAriaLabel)"
+									accept="image/png,image/jpeg,image/gif,image/webp"
+									size="md"
+									@change="showPreviewImage"
 								>
-									<EditIcon aria-hidden="true" class="h-4 w-4 text-primary" />
-								</div>
+									<UploadIcon aria-hidden="true" />
+								</FileButton>
+								<Button
+									v-if="!deletedIcon && (previewImage || collection.icon_url)"
+									native-type="button"
+									size="md"
+									@click="markIconForDeletion"
+								>
+									<TrashIcon aria-hidden="true" />
+									{{ formatMessage(messages.removeIconButton) }}
+								</Button>
 							</div>
-							<template #select>
-								<UploadIcon />
-								{{
-									previewImage || collection.icon_url
-										? formatMessage(messages.replaceIcon)
-										: formatMessage(messages.selectIcon)
-								}}
-							</template>
-							<template #remove>
-								<XIcon />
-								{{ formatMessage(messages.removeIconButton) }}
-							</template>
-						</TeleportOverflowMenu>
-						<FileButton
-							id="collection-icon-input"
-							ref="iconInputRef"
-							:max-size="524288"
-							:show-icon="false"
-							accept="image/png,image/jpeg,image/gif,image/webp"
-							class="hidden"
-							:aria-label="formatMessage(messages.uploadIconAriaLabel)"
-							@change="showPreviewImage"
-						/>
+						</div>
 					</div>
 					<div class="overflow-hidden">
-						<label class="mb-2 block text-lg font-semibold text-contrast" for="collection-title">
+						<label class="mb-2 mt-4 block text-lg font-semibold text-contrast" for="collection-title">
 							{{ formatMessage(commonMessages.titleLabel) }}
 						</label>
 						<Input
@@ -935,6 +902,12 @@ function showPreviewImage(files) {
 	reader.onload = (event) => {
 		previewImage.value = event.target.result
 	}
+}
+
+const markIconForDeletion = () => {
+	deletedIcon.value = true
+	icon.value = null
+	previewImage.value = null
 }
 
 function openEditModal(event) {
