@@ -44,11 +44,23 @@
 									<TrashIcon aria-hidden="true" />
 									{{ formatMessage(messages.removeIconButton) }}
 								</Button>
+								<Button
+									v-if="icon || deletedIcon"
+									native-type="button"
+									size="md"
+									@click="resetAvatar"
+								>
+									<UndoIcon aria-hidden="true" />
+									{{ formatMessage(commonMessages.resetButton) }}
+								</Button>
 							</div>
 						</div>
 					</div>
 					<div class="overflow-hidden">
-						<label class="mb-2 mt-4 block text-lg font-semibold text-contrast" for="collection-title">
+						<label
+							class="mb-2 mt-4 block text-lg font-semibold text-contrast"
+							for="collection-title"
+						>
 							{{ formatMessage(commonMessages.titleLabel) }}
 						</label>
 						<Input
@@ -331,6 +343,7 @@ import {
 	SaveIcon,
 	SpinnerIcon,
 	TrashIcon,
+	UndoIcon,
 	UpdatedIcon,
 	UploadIcon,
 	XIcon,
@@ -753,7 +766,6 @@ const showUpdatedDate = computed(() => {
 
 const editModal = ref(null)
 const deleteModal = ref(null)
-const iconInputRef = ref(null)
 const icon = ref(null)
 const deletedIcon = ref(false)
 const previewImage = ref(null)
@@ -908,6 +920,12 @@ const markIconForDeletion = () => {
 	deletedIcon.value = true
 	icon.value = null
 	previewImage.value = null
+}
+
+function resetAvatar() {
+	icon.value = null
+	previewImage.value = null
+	deletedIcon.value = false
 }
 
 function openEditModal(event) {
